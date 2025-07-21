@@ -15,17 +15,20 @@ def create_league(db: Session, league_in: LeagueCreate, owner: User) -> League:
 def get_leagues_for_user(db: Session, user: User):
     return user.leagues
 
+from fastapi import HTTPException
+
 def join_league(db: Session, league_id: int, user: User):
     league = db.query(League).filter(League.id == league_id).first()
     if not league:
         raise HTTPException(status_code=404, detail="League not found")
 
     if user in league.members:
-        raise HTTPException(status_code=400, detail="User already in league")
+        raise HTTPException(status_code=400, detail="Already in league")
 
     league.members.append(user)
     db.commit()
     return {"message": "Joined league successfully"}
+
 
 
 def leave_league(db: Session, league_id: int, user: User):
@@ -55,3 +58,6 @@ def delete_league(db: Session, league_id: int, user: User):
     db.delete(league)
     db.commit()
     return {"message": "League deleted successfully"}
+
+def get_league_by_id(db: Session, league_id: int) -> League | None:
+    return db.query(League).filter(League.id == league_id).first()

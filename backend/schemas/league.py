@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
+from schemas.user import UserSchema 
 
 class LeagueBase(BaseModel):
     name: str
@@ -8,9 +9,12 @@ class LeagueBase(BaseModel):
 class LeagueCreate(LeagueBase):
     pass
 
-class LeagueOut(LeagueBase):
+class LeagueOut(BaseModel):
     id: int
-    owner_id: int
+    name: str
+    description: str
+    owner: UserSchema
+    members: List[UserSchema]
 
     class Config:
         orm_mode = True

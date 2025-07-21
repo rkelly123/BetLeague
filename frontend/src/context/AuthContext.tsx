@@ -1,11 +1,11 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { jwtDecode } from 'jwt-decode';
-import { JwtPayload } from '@/types';
+import { User } from '@/types';
+import axios from '@/lib/axios';
 
 interface AuthContextType {
-  user: string | null;
+  user: User | null;
   login: (token: string) => void;
   logout: () => void;
 }
@@ -13,26 +13,32 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      const decoded: JwtPayload = jwtDecode(token);
-      setUser(decoded.sub); // email
-    }
-  }, []);
-
-  const login = (token: string) => {
-    localStorage.setItem('access_token', token);
-    const decoded: JwtPayload = jwtDecode(token);
-    setUser(decoded.sub);
-  };
+  const login = async (token: string) => {
+  localStorage.setItem('access_token', token);
+  try {
+    const res = await axios.get('/me'); // Get full user info
+    setUser(res.data);
+  } catch (err) {
+    console.error("Failed to fetch user after login: " + err);
+    logout();
+  }
+};
 
   const logout = () => {
     localStorage.removeItem('access_token');
     setUser(null);
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      axios.get('/me')
+        .then(res => setUser(res.data))
+        .catch(() => logout());
+    }
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>

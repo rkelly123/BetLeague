@@ -54,7 +54,7 @@ export default function LeagueDetailPage() {
   return (
     <div>
       <h1>{league.name}</h1>
-      <h2>League ID: {league.id}`</h2>
+      <h2>League ID: {league.id}</h2>
       <p>{league.description}</p>
       <p><strong>Owner:</strong> {league.owner.username}</p>
 

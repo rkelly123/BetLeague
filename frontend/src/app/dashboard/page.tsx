@@ -64,64 +64,100 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="p-4 space-y-4">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
-      <button onClick={logout} className="bg-red-500 text-white px-3 py-1 rounded">Logout</button>
-
-      <div className="border p-3 rounded">
-        <h2 className="text-lg font-semibold mb-2">Join League</h2>
-        <input
-          className="border p-1 mr-2"
-          value={joinId}
-          onChange={(e) => setJoinId(e.target.value)}
-          placeholder="League ID"
-        />
-        <button onClick={handleJoin} className="bg-blue-500 text-white px-3 py-1 rounded">Join</button>
-
-        {joinError && <p className="text-red-500 mt-2">{joinError}</p>}
-        {joinMessage && <p className="text-green-600 mt-2">{joinMessage}</p>}
+    <main className="min-h-screen bg-zinc-900 text-white px-6 py-10 space-y-8">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <button
+          onClick={logout}
+          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl transition"
+        >
+          Logout
+        </button>
       </div>
 
-      <div className="border p-3 rounded">
-        <h2 className="text-lg font-semibold mb-2">Create League</h2>
-        {!showForm && (
-          <button onClick={() => setShowForm(true)} className="bg-green-500 text-white px-3 py-1 rounded">Create League</button>
-        )}
-        {showForm && (
-          <div className="space-y-2">
+      {/* Join League */}
+      <section className="bg-zinc-800 p-6 rounded-2xl shadow space-y-4">
+        <h2 className="text-xl font-semibold">Join a League</h2>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <input
+            className="bg-zinc-700 border border-zinc-600 rounded-lg px-4 py-2 w-full"
+            placeholder="Enter League ID"
+            value={joinId}
+            onChange={(e) => setJoinId(e.target.value)}
+          />
+          <button
+            onClick={handleJoin}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition"
+          >
+            Join
+          </button>
+        </div>
+        {joinError && <p className="text-red-400 text-sm">{joinError}</p>}
+        {joinMessage && <p className="text-green-400 text-sm">{joinMessage}</p>}
+      </section>
+
+      {/* Create League */}
+      <section className="bg-zinc-800 p-6 rounded-2xl shadow space-y-4">
+        <h2 className="text-xl font-semibold">Create a League</h2>
+        {!showForm ? (
+          <button
+            onClick={() => setShowForm(true)}
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition"
+          >
+            Create New League
+          </button>
+        ) : (
+          <div className="space-y-3">
             <input
-              className="border p-1 w-full"
-              placeholder="Name"
+              className="bg-zinc-700 border border-zinc-600 rounded-lg px-4 py-2 w-full"
+              placeholder="League Name"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
             <input
-              className="border p-1 w-full"
+              className="bg-zinc-700 border border-zinc-600 rounded-lg px-4 py-2 w-full"
               placeholder="Description"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             />
-            <div className="space-x-2">
-              <button onClick={handleCreate} className="bg-green-500 text-white px-3 py-1 rounded">Create</button>
-              <button onClick={() => setShowForm(false)} className="bg-gray-300 px-3 py-1 rounded">Cancel</button>
+            <div className="flex gap-2">
+              <button
+                onClick={handleCreate}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition"
+              >
+                Create
+              </button>
+              <button
+                onClick={() => setShowForm(false)}
+                className="bg-zinc-600 hover:bg-zinc-700 text-white px-4 py-2 rounded-lg transition"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         )}
-      </div>
+      </section>
 
-      <div className="border p-3 rounded">
-        <h2 className="text-lg font-semibold mb-2">My Leagues</h2>
-        {leagues.map((league) => (
-          <div
-            key={league.id}
-            className="cursor-pointer hover:underline"
-            onClick={() => router.push(`/dashboard/leagues/${league.id}`)}
-          >
-            {league.name}
-          </div>
-        ))}
-      </div>
-    </div>
+      {/* My Leagues */}
+      <section className="bg-zinc-800 p-6 rounded-2xl shadow space-y-4">
+        <h2 className="text-xl font-semibold">My Leagues</h2>
+        {leagues.length > 0 ? (
+          <ul className="space-y-2">
+            {leagues.map((league) => (
+              <li
+                key={league.id}
+                onClick={() => router.push(`/dashboard/leagues/${league.id}`)}
+                className="cursor-pointer hover:bg-zinc-700 transition px-4 py-2 rounded-lg"
+              >
+                <span className="font-medium">{league.name}</span>
+                <span className="text-zinc-400 ml-2 text-sm">[ID: {league.id}]</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-zinc-400">You haven't joined any leagues yet.</p>
+        )}
+      </section>
+    </main>
   );
 }
-

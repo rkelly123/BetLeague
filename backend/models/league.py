@@ -20,3 +20,5 @@ class League(Base):
 
     owner = relationship("User", back_populates="owned_leagues")
     members = relationship("User", secondary=league_members, back_populates="leagues")
+    points = relationship("UserPoints", back_populates="league")
+    bets = relationship("Bet", back_populates="league")

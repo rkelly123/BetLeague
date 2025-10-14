@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from database import get_db
 from models.user import User
+from models.bet import Bet
 from schemas.league import LeagueCreate, LeagueOut
 import services.league_service as league_service
 from dependencies import get_current_user
@@ -41,3 +42,20 @@ def leave_league(league_id: int, db: Session = Depends(get_db), current_user: Us
 @router.delete("/{league_id}")
 def delete_league(league_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     return league_service.delete_league(db, league_id, current_user)
+
+@router.get("/{league_id}/standings")
+def get_standings(league_id: int, week: int = None, db: Session = Depends(get_db)):
+    from sqlalchemy import func
+
+    query = db.query(
+        Bet.user_id,
+        func.sum(Bet.points_returned).label("week_points")
+    ).filter(Bet.league_id == league_id)
+
+    if week:
+        query = query.filter(Bet.week_number == week)
+
+    query = query.group_by(Bet.user_id).order_by(func.sum(Bet.points_returned).desc())
+    standings = query.all()
+    return standings
+

@@ -7,7 +7,7 @@ from core.security import hash_password, verify_password
 from core.jwt import create_access_token
 from dependencies import get_current_user
 
-router = APIRouter()
+router = APIRouter(tags=["Auth"])
 
 @router.post("/signup", response_model=TokenResponse)
 def signup(user: UserCreate, db: Session = Depends(get_db)):
